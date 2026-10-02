@@ -5,8 +5,13 @@ import {cache} from "react";
 import { Role } from "@/app/generated/prisma/enums";
 
 
-const secretKey = process.env.SESSION_SECRET;
-const encodedKey = new TextEncoder().encode(secretKey);
+function getEncodedKey(): Uint8Array {
+    const secretKey = process.env.SESSION_SECRET;
+    if (!secretKey) {
+        throw new Error('SESSION_SECRET is not set');
+    }
+    return new TextEncoder().encode(secretKey);
+}
 
 function isRole(value: unknown): value is Role {
     return Object.values(Role).includes(value as Role)
@@ -22,7 +27,7 @@ export async function signSession(payload: SessionPayload): Promise<string> {
         .setProtectedHeader({ alg: 'HS256' })
         .setIssuedAt()
         .setExpirationTime('1h')
-        .sign(encodedKey);
+        .sign(getEncodedKey());
 }
 
 export async function createSession(payload: SessionPayload): Promise<void> {
@@ -39,6 +44,7 @@ export async function verifySession(token: string | null): Promise<SessionPayloa
     if (!token) {
         return null;
     }
+    const encodedKey = getEncodedKey();
     try {
         const {payload} = await jwtVerify(token, encodedKey);
         if (!isRole(payload.role)) {
