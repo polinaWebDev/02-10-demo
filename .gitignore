@@ -39,3 +39,22 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/app/generated/prisma
+
+# AI agents
+.claude/
+.windsurf/
+.cursor/
+.codex/
+.gemini/
+.agents/
+.kiro/
+.clinerules/
+.github/copilot-instructions.md
+.cursorrules
+.windsurfrules
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+.mcp.json
